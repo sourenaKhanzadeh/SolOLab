@@ -52,6 +52,58 @@ const estimateGas = async (inputFile, contractName, functionName, ...args) => {
     console.log('Gas estimate:', gasEstimate);
 };
 
+const generateInputValue = (type) => {
+    switch (type) {
+        case 'uint256':
+        case 'int256':
+            return faker.datatype.number({ min: 0, max: 1e6 });
+        case 'address':
+            return faker.datatype.uuid();
+        case 'bool':
+            return faker.datatype.boolean();
+        case 'string':
+            return faker.random.words();
+        default:
+            throw new Error(`Unsupported data type: ${type}`);
+    }
+};
+
+const compareContracts = async (contractFile1, contractFile2, contractName1, contractName2) => {
+    const [instance1, address1] = await deploy(contractFile1, contractName1);
+    const [instance2, address2] = await deploy(contractFile2, contractName2);
+
+    const abi1 = instance1.options.jsonInterface;
+    const abi2 = instance2.options.jsonInterface;
+
+    for (const item1 of abi1) {
+        if (item1.type !== 'function') continue;
+
+        const item2 = abi2.find(item => item.name === item1.name && item.type === 'function');
+        if (!item2) {
+            console.log(`Function ${item1.name} not found in the second contract`);
+            continue;
+        }
+
+        const inputs1 = item1.inputs;
+        const inputs2 = item2.inputs;
+
+        if (inputs1.length !== inputs2.length) {
+            console.log(`Function ${item1.name} has different number of inputs in the two contracts`);
+            continue;
+        }
+
+        const inputValues = inputs1.map(input => generateInputValue(input.type));
+
+        const gasEstimate1 = await instance1.methods[item1.name](...inputValues)
+            .estimateGas({ from: myAccount });
+        const gasEstimate2 = await instance2.methods[item2.name](...inputValues)
+            .estimateGas({ from: myAccount });
+
+        console.log(`Gas estimate for ${item1.name}: Contract 1 = ${gasEstimate1}, Contract 2 = ${gasEstimate2}`);
+    }
+};
+
+
 commander
     .command('compile <inputFile>')
     .description('Compile a Solidity file')
@@ -66,5 +118,11 @@ commander
     .command('estimate-gas <inputFile> <contractName> <functionName> [args...]')
     .description('Estimate gas consumption for a specific contract function')
     .action(estimateGas);
+
+commander
+    .command('compare <contractFile1> <contractFile2> <contractName1> <contractName2>')
+    .description('Compare gas estimates of two contract files')
+    .action(compareContracts);
+
 
 commander.parse(process.argv);
