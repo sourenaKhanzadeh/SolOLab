@@ -4,7 +4,8 @@
   "description": "A command-line interface for the SolOZone",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,8 @@
   },
   "homepage": "https://github.com/sourenaKhanzadeh/SolOZone#readme",
   "dependencies": {
+    "faker": "^5.5.3",
     "solc": "^0.8.19",
-    "web3": "^1.9.0"
+    "web3": "^0.20.7"
   }
 }
