@@ -1,5 +1,5 @@
 {
-  "name": "solozone",
+  "name": "sololab",
   "version": "1.0.0",
   "description": "A command-line interface for the SolOZone",
   "main": "index.js",
@@ -21,12 +21,12 @@
   "author": "Sourena Khanzadeh",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sourenaKhanzadeh/SolOZone/issues"
+    "url": "https://github.com/sourenaKhanzadeh/SolOLab/issues"
   },
-  "homepage": "https://github.com/sourenaKhanzadeh/SolOZone#readme",
+  "homepage": "https://github.com/sourenaKhanzadeh/SolOLab#readme",
   "dependencies": {
     "faker": "^5.5.3",
     "solc": "^0.8.19",
-    "web3": "^0.20.7"
+    "web3": "^1.9.0"
   }
 }

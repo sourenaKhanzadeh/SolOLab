@@ -7,22 +7,42 @@ const Web3 = require('web3');
 const faker = require('faker');
 const commander = require('commander');
 
-const web3 = new Web3('http://localhost:8545'); // Replace with your Ethereum node URL
+const web3 = new Web3('http://0.0.0.0:8545'); // Replace with your Ethereum node URL
+const web3Instance = new Web3(web3.currentProvider);
 
 const compile = (inputFile) => {
-    // ... compile code from the previous example ...
+    const source = fs.readFileSync(inputFile, 'utf8');
+
+    const input = {
+        language: 'Solidity',
+        sources: {
+            [path.basename(inputFile)]: {
+                content: source,
+            },
+        },
+        settings: {
+            outputSelection: {
+                '*': {
+                    '*': ['*'],
+                },
+            },
+        },
+    };
+
+    const output = JSON.parse(solc.compile(JSON.stringify(input)));
+    return output;
 };
 
 const deploy = async (inputFile, contractName) => {
     const output = compile(inputFile);
 
-    const bytecode = output.contracts[contractName].bytecode;
-    const abi = output.contracts[contractName].interface;
+    const bytecode = output.contracts[path.basename(inputFile)][contractName].evm.bytecode.object;
+    const abi = JSON.parse(output.contracts[path.basename(inputFile)][contractName].metadata).output.abi;
 
     const accounts = await web3.eth.getAccounts();
     const myAccount = accounts[0];
 
-    const myContract = new web3.eth.Contract(JSON.parse(abi));
+    const myContract = new web3.eth.Contract(abi);
 
     const gasEstimate = await myContract.deploy({ data: bytecode }).estimateGas();
 
@@ -33,13 +53,14 @@ const deploy = async (inputFile, contractName) => {
         });
 
     console.log('Contract deployed at address:', contractInstance.options.address);
+    return contractInstance;
 };
 
 const estimateGas = async (inputFile, contractName, functionName, ...args) => {
     const output = compile(inputFile);
 
     const abi = output.contracts[contractName].interface;
-    const contractAddress = '0x...'; // Use the deployed contract address
+    const contractAddress = '0x00000001'; // Use the deployed contract address
 
     const contractInstance = new web3.eth.Contract(JSON.parse(abi), contractAddress);
 
@@ -67,13 +88,30 @@ const generateInputValue = (type) => {
             throw new Error(`Unsupported data type: ${type}`);
     }
 };
-
 const compareContracts = async (contractFile1, contractFile2, contractName1, contractName2) => {
-    const [instance1, address1] = await deploy(contractFile1, contractName1);
-    const [instance2, address2] = await deploy(contractFile2, contractName2);
+    const output1 = compile(contractFile1);
+    const output2 = compile(contractFile2);
 
-    const abi1 = instance1.options.jsonInterface;
-    const abi2 = instance2.options.jsonInterface;
+    const bytecode1 = output1.contracts[path.basename(contractFile1)][contractName1].evm.bytecode.object;
+    const bytecode2 = output2.contracts[path.basename(contractFile2)][contractName2].evm.bytecode.object;
+
+    const abi1 = JSON.parse(output1.contracts[path.basename(contractFile1)][contractName1].metadata).output.abi;
+    const abi2 = JSON.parse(output2.contracts[path.basename(contractFile2)][contractName2].metadata).output.abi;
+
+    const contract1 = deploy(contractFile1, contractName1)
+    const contract2 = deploy(contractFile2, contractName2)
+
+    const contract1Address = await contract1;
+    const contract2Address = await contract2;
+
+    const contractAddress1 = contract1Address.options.address; // Use the deployed contract address for contract 1
+    const contractAddress2 = contract2Address.options.address; // Use the deployed contract address for contract 2
+
+    const instance1 = new web3Instance.eth.Contract(abi1, contractAddress1);
+    const instance2 = new web3Instance.eth.Contract(abi2, contractAddress2);
+
+    const accounts = await web3.eth.getAccounts();
+    const myAccount = accounts[0];
 
     for (const item1 of abi1) {
         if (item1.type !== 'function') continue;
