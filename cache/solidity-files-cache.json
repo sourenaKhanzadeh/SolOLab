@@ -1,0 +1,75 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/sourenakhanzadeh/programming/txl/SolO-Playground/custom_contracts/A.sol": {
+      "lastModificationDate": 1682719227213,
+      "contentHash": "697d8adbf24b11a23a3a58e08b4d8522",
+      "sourceName": "custom_contracts/A.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "A"
+      ]
+    },
+    "/Users/sourenakhanzadeh/programming/txl/SolO-Playground/custom_contracts/B.sol": {
+      "lastModificationDate": 1682789539502,
+      "contentHash": "6249811c79bbcf8315efbd53cbde1e6d",
+      "sourceName": "custom_contracts/B.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "B"
+      ]
+    }
+  }
+}

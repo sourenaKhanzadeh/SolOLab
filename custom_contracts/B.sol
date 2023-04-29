@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract B {
     uint256 public a;
-    constructor(){
-
+    constructor(uint256 _a){
+        a = _a;
     }
 }
